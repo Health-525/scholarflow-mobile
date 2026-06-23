@@ -28,7 +28,7 @@
 
 <p align="center">
   <img src="docs/competition/screenshots/小咪首页-首屏.png" width="30%" alt="首页" />
-  <img src="docs/competition/screenshots/小咪AI助手-对话.png" width="30%" alt="AI 助手" />
+  <img src="docs/competition/screenshots/小咪AI助手-问候.png" width="30%" alt="AI 助手" />
   <img src="docs/competition/screenshots/小咪课表-今日.png" width="30%" alt="课表" />
 </p>
 
