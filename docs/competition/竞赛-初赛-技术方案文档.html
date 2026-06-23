@@ -1,0 +1,693 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ScholarFlow 端侧 AI 学习助手 · 初赛技术方案</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111317;
+      --muted: #5c6571;
+      --soft: #eef2f5;
+      --line: #d7dde4;
+      --paper: #ffffff;
+      --brand: #6366f1;
+      --brand-soft: #e8e9ff;
+      --green: #17a861;
+      --green-soft: #dff7ea;
+      --orange: #f06b35;
+      --orange-soft: #fff0e8;
+      --blue: #2864d9;
+      --blue-soft: #e7efff;
+      --yellow: #e7b438;
+      --red: #d94d4d;
+      --dark: #171b20;
+      --radius: 8px;
+      --shadow: 0 18px 60px rgba(17, 19, 23, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; overflow-x: hidden; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(17, 19, 23, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(17, 19, 23, 0.04) 1px, transparent 1px),
+        #f7f9fb;
+      background-size: 40px 40px;
+      line-height: 1.55;
+      overflow-x: hidden;
+    }
+
+    button, input, select { font: inherit; }
+    a { color: inherit; text-decoration: none; }
+
+    .topbar {
+      position: sticky; top: 0; z-index: 20;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      padding: 14px clamp(18px, 4vw, 56px);
+      border-bottom: 1px solid rgba(17, 19, 23, 0.08);
+      background: rgba(247, 249, 251, 0.9);
+      backdrop-filter: blur(18px);
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; min-width: 160px; }
+
+    .brand-mark {
+      width: 34px; height: 34px; border-radius: var(--radius);
+      display: grid; place-items: center;
+      color: #fff; font-weight: 900; font-size: 17px;
+      background: linear-gradient(135deg, var(--brand), #8b8ff6);
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.35);
+    }
+
+    .brand-name { display: grid; line-height: 1.1; }
+    .brand-name strong { font-size: 16px; font-weight: 800; }
+    .brand-name span { font-size: 11px; color: var(--muted); }
+
+    .nav { display: flex; align-items: center; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav a { white-space: nowrap; padding: 8px 10px; border-radius: 6px; color: var(--muted); font-size: 13px; }
+    .nav a:hover { color: var(--ink); background: var(--soft); }
+
+    .deck-action {
+      border: 1px solid var(--ink); background: var(--ink); color: #fff;
+      border-radius: 6px; padding: 9px 12px; font-size: 13px; cursor: pointer; white-space: nowrap;
+    }
+
+    main { overflow: hidden; }
+
+    section { padding: clamp(58px, 8vw, 100px) clamp(18px, 4vw, 56px); }
+    .section-inner { width: min(1180px, 100%); margin: 0 auto; }
+
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px;
+      color: var(--brand); font-size: 13px; font-weight: 800;
+    }
+    .eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 820px; margin-bottom: 22px;
+      font-size: clamp(36px, 6.4vw, 76px); line-height: 1.0; font-weight: 900;
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    h2 {
+      margin-bottom: 14px; font-size: clamp(27px, 4vw, 48px); line-height: 1.1; font-weight: 850;
+      overflow-wrap: anywhere; word-break: break-word;
+    }
+    h3 { margin-bottom: 8px; font-size: 19px; line-height: 1.25; }
+
+    .lead { max-width: 720px; color: var(--muted); font-size: clamp(17px, 2vw, 22px); overflow-wrap: anywhere; }
+
+    /* Hero */
+    .hero {
+      min-height: calc(100vh - 64px); padding-top: clamp(42px, 7vw, 84px); padding-bottom: 36px;
+      display: grid; align-items: center;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: clamp(28px, 5vw, 76px); align-items: center;
+    }
+    .hero-copy { min-width: 0; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 32px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px;
+      border: 1px solid var(--line); border-radius: 6px; background: rgba(255, 255, 255, 0.76);
+      color: var(--muted); font-size: 13px; font-weight: 700;
+    }
+    .badge b { color: var(--ink); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; min-height: 44px;
+      padding: 11px 16px; border-radius: 6px; border: 1px solid var(--ink); background: var(--ink);
+      color: #fff; font-weight: 800; cursor: pointer;
+    }
+    .btn.secondary { background: var(--paper); color: var(--ink); }
+    .hero-proof { margin-top: 22px; color: var(--muted); font-size: 14px; }
+
+    .visual-stage { position: relative; min-height: 600px; }
+
+    .phone {
+      position: relative; width: min(360px, 100%); min-height: 588px; margin-left: auto;
+      border: 10px solid #111317; border-radius: 32px; background: #101418;
+      box-shadow: var(--shadow); overflow: hidden;
+    }
+    .phone::before {
+      content: ""; position: absolute; top: 10px; left: 50%; width: 92px; height: 22px;
+      transform: translateX(-50%); border-radius: 16px; background: #111317; z-index: 3;
+    }
+
+    .chat-top {
+      position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; padding: 40px 18px 12px; background: #14181d; color: #fff;
+    }
+    .chat-top .model { display: grid; line-height: 1.2; }
+    .chat-top .model strong { font-size: 14px; }
+    .chat-top .model span { font-size: 11px; color: rgba(255,255,255,0.6); }
+    .offline-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 20px;
+      background: rgba(23, 168, 97, 0.16); color: #4fd496; font-size: 11px; font-weight: 800;
+    }
+    .offline-pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #2fd28a; box-shadow: 0 0 0 4px rgba(47,210,138,0.18); }
+
+    .agg-tabs { display: flex; gap: 6px; padding: 10px 14px; background: #14181d; }
+    .agg-tab { flex: 1; text-align: center; padding: 7px 4px; border-radius: 7px; font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.55); background: rgba(255,255,255,0.05); }
+    .agg-tab.active { color: #fff; background: var(--brand); }
+
+    .chat-feed {
+      padding: 16px 14px; background: #f8fafb; min-height: 300px;
+      display: grid; gap: 10px; align-content: start;
+    }
+    .chat-msg { max-width: 86%; padding: 10px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; }
+    .chat-msg.user { justify-self: end; background: var(--brand); color: #fff; border-bottom-right-radius: 4px; }
+    .chat-msg.bot { justify-self: start; background: #fff; border: 1px solid var(--line); color: var(--ink); border-bottom-left-radius: 4px; }
+    .chat-msg.bot .caret { display: inline-block; width: 7px; height: 14px; vertical-align: -2px; margin-left: 1px; background: var(--brand); animation: blink 1s steps(2) infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .chat-input { display: flex; align-items: center; gap: 8px; padding: 12px 14px; background: #f8fafb; border-top: 1px solid #e6ebf0; }
+    .chat-input .box { flex: 1; padding: 9px 12px; border-radius: 20px; background: #fff; border: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .chat-input .send { width: 36px; height: 36px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: #fff; font-weight: 900; }
+
+    .hero-samples { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 18px; }
+    .samples-label { color: var(--muted); font-size: 13px; font-weight: 800; margin-right: 2px; }
+    .sample-btn { padding: 8px 12px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); font-size: 12px; font-weight: 800; color: var(--muted); cursor: pointer; }
+    .sample-btn.active { color: #fff; background: var(--ink); border-color: var(--ink); }
+
+    .floating-note {
+      position: absolute; left: 0; top: 56px; width: min(244px, 52%); padding: 14px;
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper);
+      box-shadow: 0 16px 40px rgba(17, 19, 23, 0.1); z-index: 4;
+    }
+    .floating-note strong { display: block; margin-bottom: 6px; font-size: 14px; }
+    .floating-note p { margin: 0; color: var(--muted); font-size: 12px; }
+
+    .next-hint { display: flex; justify-content: center; margin-top: 22px; color: var(--muted); font-size: 13px; }
+
+    /* Shared blocks */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+
+    .panel, .metric, .pain-card, .comp-card, .highlight {
+      border: 1px solid var(--line); border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88); box-shadow: 0 10px 34px rgba(17, 19, 23, 0.05);
+    }
+    .panel { padding: 22px; }
+
+    .metric { padding: 20px; }
+    .metric-value { margin-bottom: 6px; font-size: clamp(28px, 4vw, 44px); line-height: 1; font-weight: 900; }
+    .metric-label { color: var(--muted); font-size: 14px; }
+    .metric.brand .metric-value { color: var(--brand); }
+    .metric.green .metric-value { color: var(--green); }
+    .metric.orange .metric-value { color: var(--orange); }
+
+    .section-head {
+      display: grid; grid-template-columns: minmax(0, 0.86fr) minmax(260px, 0.44fr);
+      gap: 24px; align-items: end; margin-bottom: 28px;
+    }
+    .section-note { color: var(--muted); font-size: 16px; }
+
+    .pain-card { position: relative; padding: 22px; min-height: 232px; overflow: hidden; }
+    .pain-card::after {
+      content: attr(data-index); position: absolute; right: 16px; bottom: -18px;
+      color: rgba(17, 19, 23, 0.06); font-size: 86px; line-height: 1; font-weight: 900;
+    }
+    .pain-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+    .pain-strength { padding: 4px 8px; border-radius: 5px; background: var(--orange-soft); color: var(--orange); font-size: 12px; font-weight: 900; white-space: nowrap; }
+    .pain-card > p { color: var(--muted); }
+    .pain-card .fix { display: block; margin-top: 12px; font-weight: 800; color: var(--ink); }
+    .pain-card .fix b { color: var(--brand); }
+
+    /* Architecture loop */
+    .product-loop { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 24px; }
+    .loop-step { position: relative; padding: 18px 14px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); min-height: 150px; }
+    .loop-step::after { content: ""; position: absolute; top: 50%; right: -10px; width: 10px; height: 1px; background: var(--line); }
+    .loop-step:last-child::after { display: none; }
+    .loop-number { width: 28px; height: 28px; display: grid; place-items: center; margin-bottom: 12px; border-radius: 50%; background: var(--ink); color: #fff; font-weight: 900; font-size: 13px; }
+    .loop-step strong { display: block; margin-bottom: 6px; font-size: 14px; }
+    .loop-step span { color: var(--muted); font-size: 12.5px; }
+
+    /* Matrix */
+    .matrix { display: grid; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--paper); }
+    .matrix-row { display: grid; grid-template-columns: 0.7fr 1fr 1.5fr; border-bottom: 1px solid var(--line); }
+    .matrix-row:last-child { border-bottom: 0; }
+    .matrix-cell { padding: 14px; border-right: 1px solid var(--line); font-size: 14px; }
+    .matrix-cell:last-child { border-right: 0; }
+    .matrix-head { background: var(--dark); color: #fff; font-weight: 900; }
+    .matrix-cell strong { display: block; margin-bottom: 4px; }
+    .matrix-cell span { color: var(--muted); }
+    .matrix-head .matrix-cell span { color: rgba(255, 255, 255, 0.7); }
+    .tag { display: inline-block; padding: 3px 8px; border-radius: 5px; background: var(--brand-soft); color: var(--brand); font-weight: 900; font-size: 13px; }
+
+    /* feature list */
+    .feature-list { display: grid; gap: 12px; margin: 18px 0 0; padding: 0; list-style: none; }
+    .feature-list li { display: flex; gap: 10px; align-items: flex-start; color: var(--muted); }
+    .check { width: 20px; height: 20px; flex: 0 0 auto; display: grid; place-items: center; margin-top: 2px; border-radius: 50%; background: var(--green); color: #fff; font-size: 13px; font-weight: 900; }
+
+    /* adaptation trigger grid */
+    .trigger-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+    .trigger-card { padding: 16px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); min-height: 132px; }
+    .trigger-card b { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-bottom: 10px; border-radius: 8px; background: var(--brand-soft); color: var(--brand); font-size: 13px; font-weight: 900; }
+    .trigger-card strong { display: block; margin-bottom: 6px; }
+    .trigger-card span { color: var(--muted); font-size: 13px; }
+
+    /* SME2 dark thesis */
+    .thesis { margin-top: 18px; padding: clamp(22px, 3vw, 30px); border-radius: var(--radius); background: var(--dark); color: #fff; border: 1px solid var(--dark); }
+    .thesis h3 { color: #fff; }
+    .thesis p { color: rgba(255, 255, 255, 0.7); margin-bottom: 0; }
+    .thesis .formula { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 0; }
+    .token { padding: 8px 11px; border-radius: 6px; background: rgba(255, 255, 255, 0.1); font-size: 14px; font-weight: 900; }
+    .token.warm { background: rgba(240, 107, 53, 0.2); color: #ffb38f; }
+    .thesis .fine { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.55); }
+
+    /* highlights */
+    .highlight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .highlight { padding: 22px; min-height: 168px; }
+    .highlight.hero-one { grid-column: span 2; background: linear-gradient(120deg, var(--brand-soft), rgba(255,255,255,0.9)); border-color: rgba(99,102,241,0.35); }
+    .icon-box { width: 44px; height: 44px; display: grid; place-items: center; margin-bottom: 16px; border-radius: var(--radius); color: #fff; background: var(--ink); font-weight: 900; }
+    .highlight.hero-one .icon-box { background: var(--brand); }
+    .highlight:nth-child(3) .icon-box { background: var(--green); }
+    .highlight:nth-child(4) .icon-box { background: var(--orange); }
+    .highlight p { color: var(--muted); margin-bottom: 0; font-size: 14px; }
+
+    /* demo tabs */
+    .demo-lab { display: grid; grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr); gap: 28px; align-items: start; }
+    .demo-controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+    .tab-btn { min-height: 46px; border: 1px solid var(--line); border-radius: 6px; background: var(--paper); color: var(--muted); font-weight: 900; cursor: pointer; }
+    .tab-btn.active { color: #fff; border-color: var(--ink); background: var(--ink); }
+    .demo-panel { display: none; }
+    .demo-panel.active { display: block; }
+
+    /* metrics band */
+    .metrics-band { background: var(--dark); color: #fff; }
+    .metrics-band .eyebrow { color: #8b8ff6; }
+    .metrics-band .eyebrow::before { background: #8b8ff6; }
+    .metrics-band h2, .metrics-band .lead { color: #fff; }
+    .metrics-band .section-note { color: rgba(255, 255, 255, 0.68); }
+    .perf-grid { display: grid; grid-template-columns: repeat(3, minmax(140px, 1fr)); gap: 10px; margin-top: 30px; }
+    .perf-step { min-height: 120px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: var(--radius); background: rgba(255, 255, 255, 0.06); }
+    .perf-step strong { display: block; margin-bottom: 8px; font-size: 13px; color: rgba(255,255,255,0.7); }
+    .perf-step b { display: block; margin-bottom: 4px; color: #fff; font-size: 26px; }
+    .perf-step b.measuring { color: #8b8ff6; font-size: 18px; }
+    .perf-step span { color: rgba(255, 255, 255, 0.55); font-size: 12px; }
+
+    /* closing */
+    .closing { padding-bottom: clamp(70px, 9vw, 110px); }
+    .closing-panel { display: grid; grid-template-columns: 1fr 0.72fr; gap: 26px; align-items: center; padding: clamp(24px, 4vw, 42px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); box-shadow: var(--shadow); }
+    .quote { margin: 20px 0 0; padding-left: 18px; border-left: 4px solid var(--brand); color: var(--muted); font-size: 19px; }
+    .stack-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+    .stack-chips span { padding: 7px 11px; border-radius: 6px; background: var(--ink); color: #fff; font-size: 13px; font-weight: 800; }
+    .stack-chips span.soft { background: var(--brand-soft); color: var(--brand); }
+    .focus-list { display: grid; gap: 12px; padding: 0; margin: 0; list-style: none; }
+    .focus-list li { display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+    .focus-list li:last-child { border-bottom: 0; padding-bottom: 0; }
+    .focus-list b { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--brand-soft); color: var(--brand); font-weight: 900; }
+    .focus-list strong { display: block; margin-bottom: 3px; }
+    .focus-list span { color: var(--muted); font-size: 14px; }
+
+    /* responsive */
+    @media (max-width: 980px) {
+      .topbar { align-items: flex-start; flex-wrap: wrap; }
+      .deck-action { display: none; }
+      .hero-grid, .section-head, .demo-lab, .closing-panel { grid-template-columns: 1fr; }
+      .visual-stage { min-height: auto; }
+      .phone { margin: 0 auto; }
+      .floating-note { display: none; }
+      .grid-3, .highlight-grid, .trigger-grid { grid-template-columns: 1fr 1fr; }
+      .highlight.hero-one { grid-column: span 2; }
+      .product-loop { grid-template-columns: 1fr; }
+      .loop-step::after { display: none; }
+      .matrix { overflow-x: auto; }
+      .matrix-row { min-width: 640px; }
+      .perf-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      section { padding-left: 16px; padding-right: 16px; }
+      .nav { width: 100%; }
+      .hero { min-height: auto; }
+      .btn, .badge { width: 100%; }
+      p, .lead, .section-note { overflow-wrap: anywhere; }
+      .grid-3, .grid-2, .highlight-grid, .trigger-grid, .perf-grid { grid-template-columns: 1fr; }
+      .highlight.hero-one { grid-column: span 1; }
+      .phone { min-height: 560px; border-width: 8px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { scroll-behavior: auto !important; }
+      .chat-msg.bot .caret { animation: none; }
+    }
+
+    /* print → 导出 PDF */
+    @media print {
+      :root { --shadow: none; }
+      body { background: #fff; }
+      .topbar, .next-hint, .deck-action, .hero-samples, .cta-row { display: none !important; }
+      section { padding: 24px 22px; break-inside: avoid; }
+      .hero { min-height: auto; }
+      .panel, .pain-card, .metric, .highlight, .trigger-card, .loop-step, .perf-step, .thesis, .matrix, .closing-panel { break-inside: avoid; box-shadow: none; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="ScholarFlow 首页">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span class="brand-name">
+        <strong>ScholarFlow</strong>
+        <span>端侧 AI 学习助手</span>
+      </span>
+    </a>
+    <nav class="nav" aria-label="文档导航">
+      <a href="#scene">应用场景</a>
+      <a href="#pain">用户痛点</a>
+      <a href="#tech">技术方案</a>
+      <a href="#innov">创新点</a>
+      <a href="#expect">预期效果</a>
+    </nav>
+    <button class="deck-action" type="button" onclick="window.print()">导出 PDF</button>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="section-inner hero-grid">
+        <div class="hero-copy">
+          <p class="eyebrow">手机上的创意AI · 初赛作品</p>
+          <h1 id="hero-title">把分散在十几个 App 的学业，<br>收进一个离线 AI 助手</h1>
+          <p class="lead">ScholarFlow 用一个完全跑在手机本地的 Qwen 大模型，做贯穿课表、作业、知识库的统一智能入口——离线、私密、零成本。</p>
+          <div class="hero-badges">
+            <span class="badge">比云 AI 更 <b>私密</b></span>
+            <span class="badge">比多个 App 更 <b>省心</b></span>
+            <span class="badge">比联网更 <b>随时可用</b></span>
+          </div>
+          <div class="cta-row">
+            <a class="btn" href="#tech">看技术方案</a>
+            <a class="btn secondary" href="#innov">看创新点</a>
+          </div>
+          <p class="hero-proof">一句话定位：一个 App 聚合全部学业，一个端侧 AI 不联网地随时帮你学。</p>
+          <div class="hero-samples" role="group" aria-label="示例问题">
+            <span class="samples-label">试试问它</span>
+            <button class="sample-btn active" type="button" data-q="math">高数概念</button>
+            <button class="sample-btn" type="button" data-q="code">编程报错</button>
+            <button class="sample-btn" type="button" data-q="plan">复习规划</button>
+          </div>
+        </div>
+
+        <div class="visual-stage" aria-label="端侧 AI 离线问答界面模拟">
+          <div class="floating-note">
+            <strong>项目的核心瞬间</strong>
+            <p>模型跑在手机本地——问答全程离线、不耗流量、数据不出端。</p>
+          </div>
+          <div class="phone">
+            <div class="chat-top">
+              <div class="model">
+                <strong>AI 学习助手</strong>
+                <span>Qwen2.5-3B · 4-bit · 端侧</span>
+              </div>
+              <span class="offline-pill">离线运行</span>
+            </div>
+            <div class="agg-tabs" aria-hidden="true">
+              <span class="agg-tab">课表</span>
+              <span class="agg-tab">作业</span>
+              <span class="agg-tab">知识库</span>
+              <span class="agg-tab active">AI</span>
+            </div>
+            <div class="chat-feed">
+              <div class="chat-msg user" id="qBubble">梯度下降是什么？用通俗例子讲讲</div>
+              <div class="chat-msg bot" id="aBubble">想象你在山上蒙眼下山：每一步都朝最陡的下坡方向走一小步，慢慢就到谷底——梯度下降就是让模型沿"误差最陡下降"的方向一点点调参数<span class="caret"></span></div>
+            </div>
+            <div class="chat-input" aria-hidden="true">
+              <span class="box">问点什么……（无需联网）</span>
+              <span class="send">↑</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="next-hint" aria-hidden="true">↓ 向下滚动查看完整方案</div>
+    </section>
+
+    <!-- 应用场景 -->
+    <section id="scene" aria-labelledby="scene-title">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">应用场景</p>
+            <h2 id="scene-title">大学生的学业，被切成了十几个 App</h2>
+          </div>
+          <p class="section-note">查课表一个、记作业一个、算 GPA 一个、抢座位又一个。ScholarFlow 把它们聚合进一个 App，再让端侧 AI 成为贯穿所有模块的统一入口。</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="panel">
+            <h3>图书馆 / 自习室</h3>
+            <p class="section-note">地下层没信号也能随手输入一道高数、编程、统计题，端侧模型离线即答。</p>
+          </article>
+          <article class="panel">
+            <h3>通勤路上</h3>
+            <p class="section-note">让它用通俗类比讲清一个机器学习 / 专业概念，全程不耗一点流量。</p>
+          </article>
+          <article class="panel">
+            <h3>复习周</h3>
+            <p class="section-note">按你聚合在这里的知识库、作业出练习、梳理思路、排复习时间表。</p>
+          </article>
+        </div>
+
+        <div class="panel" style="margin-top:16px">
+          <h3>一个 App = 一整套学业，一个 AI 入口贯穿它们</h3>
+          <div class="hero-badges" style="margin:14px 0 0">
+            <span class="badge">课表</span><span class="badge">作业</span><span class="badge">考试</span>
+            <span class="badge">GPA</span><span class="badge">知识库</span><span class="badge">番茄钟</span>
+            <span class="badge">图书馆选座</span><span class="badge" style="border-color:var(--brand);color:var(--brand)">→ 端侧 AI 统一入口</span>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <h3>已跑通的自动化能力（真实在用）</h3>
+          <p class="section-note">这套学习系统已经把"方便"做实——下列均为真实在用功能。本项目的核心升级，是把其中的 AI 大脑从云端搬进手机端侧、离线运行。</p>
+          <ul class="feature-list">
+            <li><span class="check">✓</span><span><strong>自动课表：</strong>教务 PDF → AI 解析 → JSON，每日定时推送当天课表。</span></li>
+            <li><span class="check">✓</span><span><strong>实时调课：</strong>一句"帮我调课"覆盖原表、自动更新查询结果。</span></li>
+            <li><span class="check">✓</span><span><strong>作业助手：</strong>iOS 快捷指令自动格式化 + 一键提交。</span></li>
+            <li><span class="check">✓</span><span><strong>多端同步：</strong>手机 / 电脑 / 云三端打通，GitHub 为中枢、Obsidian 看笔记。</span></li>
+            <li><span class="check">✓</span><span><strong>AI 信息流：</strong>每日 AI 新闻、视频字幕自动总结。</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 用户痛点 -->
+    <section id="pain" aria-labelledby="pain-title">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">用户痛点</p>
+            <h2 id="pain-title">最大的痛不是没工具，而是工具太散、还都要联网付费</h2>
+          </div>
+          <p class="section-note">把"聚合 + 端侧"对准学生最现实的四五个痛点，每个都有直接的产品对应。</p>
+        </div>
+
+        <div class="grid-3">
+          <article class="pain-card" data-index="01">
+            <div class="pain-top"><h3>工具分散</h3><span class="pain-strength">头号痛点</span></div>
+            <p>课表 / 作业 / 笔记 / 选座散落在多个 App 与网页，来回切换、各自登录联网。</p>
+            <span class="fix">对应：<b>聚合到一个 App + 一个 AI 统一入口</b></span>
+          </article>
+          <article class="pain-card" data-index="02">
+            <div class="pain-top"><h3>网络依赖</h3><span class="pain-strength">高频痛点</span></div>
+            <p>图书馆地下层、宿舍 wifi 不稳、流量贵，断网就用不了云端工具。</p>
+            <span class="fix">对应：<b>端侧离线、零流量</b></span>
+          </article>
+          <article class="pain-card" data-index="03">
+            <div class="pain-top"><h3>付费门槛</h3><span class="pain-strength">高阻力</span></div>
+            <p>学生预算敏感，主流云 AI 要会员或按量计费，长期用不起。</p>
+            <span class="fix">对应：<b>端侧零边际成本、无限次</b></span>
+          </article>
+          <article class="pain-card" data-index="04">
+            <div class="pain-top"><h3>隐私顾虑</h3><span class="pain-strength">高敏感</span></div>
+            <p>成绩、薄弱知识点、个人学习数据，不放心上传到云端。</p>
+            <span class="fix">对应：<b>数据不出端、本地推理</b></span>
+          </article>
+          <article class="pain-card" data-index="05">
+            <div class="pain-top"><h3>缺个人上下文</h3><span class="pain-strength">体验痛点</span></div>
+            <p>通用云 AI 不懂"我的课表、作业、知识库"，给不了针对性帮助。</p>
+            <span class="fix">对应：<b>与本地学业数据同处一端，可端侧个性化</b></span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 技术方案 -->
+    <section id="tech" aria-labelledby="tech-title">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">技术方案</p>
+            <h2 id="tech-title">模型选型 + 推理框架 + 端侧适配，全部跑在手机本地</h2>
+          </div>
+          <p class="section-note">不接任何云 API。模型与推理都在 iPhone 15 上完成，桌面/开发态自动切回 Ollama，便于在 M5 上快速迭代。</p>
+        </div>
+
+        <div class="matrix" aria-label="选型表">
+          <div class="matrix-row matrix-head">
+            <div class="matrix-cell">项</div>
+            <div class="matrix-cell">选择</div>
+            <div class="matrix-cell">关键理由</div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell"><strong>模型选型</strong></div>
+            <div class="matrix-cell"><span class="tag">Qwen2.5-3B-Instruct · 4-bit</span></div>
+            <div class="matrix-cell"><span>中文与学科推理强；3B 是手机端"质量 / 体积 / 速度"最佳平衡；阿里官方已预转换 MNN 格式，免自行转换（备 1.5B 应对低内存）。</span></div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell"><strong>推理框架</strong></div>
+            <div class="matrix-cell"><span class="tag">MNN-LLM</span></div>
+            <div class="matrix-cell"><span>端侧专用引擎；CPU 上 prefill / decode 较 llama.cpp 约 8.6× / 8.9×（MNN-LLM 论文）；官方有 iOS 端侧 LLM App 可参考。</span></div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell"><strong>部署</strong></div>
+            <div class="matrix-cell"><span class="tag">iPhone 15 · NEON CPU</span></div>
+            <div class="matrix-cell"><span>参赛机；MNN 编译为 iOS xcframework，CPU 后端运行，不依赖云、不依赖 NPU。</span></div>
+          </div>
+          <div class="matrix-row">
+            <div class="matrix-cell"><strong>模型分发</strong></div>
+            <div class="matrix-cell"><span class="tag">ModelScope 直链 · ~1.9GB</span></div>
+            <div class="matrix-cell"><span>不打包进 IPA，首次启动下载到 App 沙盒、再本地加载——这一步即演示视频要录的"模型本地加载过程"。</span></div>
+          </div>
+        </div>
+
+        <h3 style="margin:28px 0 0">端侧架构：聊天 UI 零改动，手机走 MNN、桌面走 Ollama</h3>
+        <div class="product-loop" aria-label="端侧推理架构链路">
+          <div class="loop-step"><span class="loop-number">1</span><strong>聊天 UI</strong><span>现有 useChat 界面，端侧 / 桌面共用一套，零改动。</span></div>
+          <div class="loop-step"><span class="loop-number">2</span><strong>ChatBackend 抽象</strong><span>按平台分流：手机→原生，桌面/开发→Ollama。</span></div>
+          <div class="loop-step"><span class="loop-number">3</span><strong>Capacitor 插件</strong><span>Swift → Obj-C++ 桥接，逐 token 流式回调。</span></div>
+          <div class="loop-step"><span class="loop-number">4</span><strong>MNN-LLM 运行时</strong><span>原生线程推理，不阻塞界面。</span></div>
+          <div class="loop-step"><span class="loop-number">5</span><strong>Qwen2.5-3B</strong><span>4-bit 权重，端侧本地生成。</span></div>
+        </div>
+
+        <h3 style="margin:30px 0 0">端侧适配思路</h3>
+        <div class="trigger-grid">
+          <div class="trigger-card"><b>1</b><strong>下载即加载</strong><span>首启从 ModelScope 拉取到沙盒、MNN 加载，控包体、可断点续传。</span></div>
+          <div class="trigger-card"><b>2</b><strong>xcframework 构建</strong><span>开启 LLM / low-memory / 权重反量化 / Transformer 融合等编译选项。</span></div>
+          <div class="trigger-card"><b>3</b><strong>流式不卡 UI</strong><span>推理跑原生线程，逐 token 事件推回 WebView 渲染。</span></div>
+          <div class="trigger-card"><b>4</b><strong>聚合入口架构</strong><span>AI 作统一入口，未来端侧读取本地学业数据（端侧 RAG）。</span></div>
+          <div class="trigger-card"><b>5</b><strong>内存治理</strong><span>4-bit + low-memory 贴合 iPhone 15 内存预算，3B 偏紧时降级 1.5B。</span></div>
+          <div class="trigger-card"><b>6</b><strong>无云、无 NPU</strong><span>纯 CPU 端侧推理，满足"本地加载 + 真交互"赛事要求。</span></div>
+        </div>
+
+        <div class="thesis">
+          <h3>SME2 前瞻：今天可跑，未来无缝提速</h3>
+          <p>iPhone 15（A16 / A17 Pro）走通用 NEON CPU；我们在含 SME2 的 M5 上实测验证 MNN 的 SME2 加速路径，形成同构演进路线。</p>
+          <div class="formula">
+            <span class="token">iPhone 15 · NEON</span>
+            <span class="token">→</span>
+            <span class="token">M5 · SME2 实测验证</span>
+            <span class="token">→</span>
+            <span class="token warm">未来 A19 / 天玑9500 无缝吃 SME2</span>
+          </div>
+          <p class="fine">注：A19/M5 硬件具备 SME2，但 MNN 在 iOS 上是否实际派发 SME2 kernel 以真机实测为准，不预先把加速倍数写死。</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 创新点 -->
+    <section id="innov" aria-labelledby="innov-title">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">创新点</p>
+            <h2 id="innov-title">差异化不是"更聪明"，而是更方便——聚合 + 随身 + 端侧</h2>
+          </div>
+          <p class="section-note">它不是为比赛临时搭的 demo：源于一套真实在用的自动化学习系统，本项目把它的 AI 大脑从云端搬进手机本地、离线运行。最大亮点——方便。</p>
+        </div>
+
+        <div class="highlight-grid">
+          <article class="highlight hero-one">
+            <div class="icon-box">01</div>
+            <h3>「聚合平台 × 端侧 AI」的极致方便（最大亮点）</h3>
+            <p>把分散在十几个 App 的学业聚合到一端，端侧 AI 作为统一入口贯穿所有模块——一个手机、一个离线助手解决全部学业，免切换、免联网、免付费。</p>
+          </article>
+          <article class="highlight">
+            <div class="icon-box">02</div>
+            <h3>真实在用，不是临时 demo</h3>
+            <p>从"查课表"一路长成学习工作流系统（课表 / 作业 / 笔记 / 多端同步），作者每天在用——真实、可信，踩中 OpenClaw 端侧 AI 热点。</p>
+          </article>
+          <article class="highlight">
+            <div class="icon-box">03</div>
+            <h3>从云端自动化 → 端侧 AI</h3>
+            <p>原本 AI 跑在云端（自动化脚本 / API）；本项目把核心 AI 落到手机本地（Qwen2.5-3B + MNN），离线可用、零成本、数据不出端。</p>
+          </article>
+          <article class="highlight">
+            <div class="icon-box">04</div>
+            <h3>AI 懂你的全部学业上下文</h3>
+            <p>数据都聚合在本地，端侧读取课表 / 作业 / 知识库做个性化辅导、零上传（端侧 RAG 方向）。</p>
+          </article>
+          <article class="highlight">
+            <div class="icon-box">05</div>
+            <h3>可移植工程</h3>
+            <p>桌面 / 手机双后台、UI 零改动的抽象；M5(SME2) → iPhone 15(NEON) 同构演进。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- 预期效果 -->
+    <section id="expect" class="metrics-band" aria-labelledby="expect-title">
+      <div class="section-inner">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">预期效果</p>
+            <h2 id="expect-title">性能口径已定，数字真机回填——不编数据</h2>
+          </div>
+          <p class="section-note">技术评审看得住：先定评测口径，iPhone 15 / M5 真机测完再填，不预设虚构数字。</p>
+        </div>
+
+        <div class="perf-grid">
+          <div class="perf-step"><strong>模型体积</strong><b>~1.9GB</b><span>4-bit 量化</span></div>
+          <div class="perf-step"><strong>推理流量</strong><b>0</b><span>完全离线</span></div>
+          <div class="perf-step"><strong>框架加速</strong><b>8.6× / 8.9×</b><span>MNN vs llama.cpp（论文）</span></div>
+          <div class="perf-step"><strong>首 token 延迟</strong><b class="measuring">实测中</b><span>iPhone 15 真机</span></div>
+          <div class="perf-step"><strong>decode 速度</strong><b class="measuring">实测中</b><span>tok/s，iPhone 15</span></div>
+          <div class="perf-step"><strong>峰值内存</strong><b class="measuring">实测中</b><span>App 沙盒</span></div>
+        </div>
+
+        <p class="lead" style="margin-top:26px">交付：iPhone 15 上端侧运行 Qwen2.5-3B，完成「模型本地加载 → 流式问答 → 核心交互」全链路，全程离线，并录制演示视频。体验目标——一站式、随身、离线、私密、零成本的随身 AI 学习伙伴。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // hero 示例问题切换
+    const samples = {
+      math: {
+        q: "梯度下降是什么？用通俗例子讲讲",
+        a: "想象你在山上蒙眼下山：每一步都朝最陡的下坡方向走一小步，慢慢就到谷底——梯度下降就是让模型沿\"误差最陡下降\"的方向一点点调参数"
+      },
+      code: {
+        q: "Python 报 IndexError: list index out of range 怎么办？",
+        a: "说明你访问的下标超出了列表长度。先 print(len(列表)) 看实际长度，再检查循环边界——多半是 range 用了 len+1，或空列表还去取 [0]"
+      },
+      plan: {
+        q: "下周三门考试，帮我排个复习计划",
+        a: "按「先弱后强、考前一天只过错题」来：周一二主攻最没把握的那门，穿插另两门的真题；每 50 分钟休 10 分钟，考前夜不学新内容"
+      }
+    };
+    const qBubble = document.getElementById("qBubble");
+    const aBubble = document.getElementById("aBubble");
+    document.querySelectorAll("[data-q]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-q]").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        const s = samples[btn.dataset.q];
+        qBubble.textContent = s.q;
+        aBubble.innerHTML = s.a + '<span class="caret"></span>';
+      });
+    });
+  </script>
+</body>
+</html>
