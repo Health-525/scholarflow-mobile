@@ -1,21 +1,22 @@
 <div align="center">
-  <img src="public/icons/logo.png" alt="ScholarFlow Logo" width="96" />
+  <img src="public/icons/logo.png" alt="ScholarFlow Logo" width="84" />
   <h1>ScholarFlow Mobile</h1>
-  <p><strong>端侧 AI 学习助手 · 手机端（iOS / Android）</strong></p>
-  <p><strong>On-device AI study companion for college students — iOS / Android, fully offline</strong></p>
-
   <p>
-    <a href="docs/competition/">比赛技术方案 Competition</a> ·
-    <a href="https://github.com/Health-525/scholarflow">桌面端主仓 Desktop repo</a> ·
-    <a href="https://github.com/Health-525/scholarflow-mobile/issues/new">问题反馈 Issues</a>
+    <strong>端侧 AI 学习助手 · 手机端 · 完全离线</strong><br />
+    <sub>On-device AI study companion · iOS / Android · fully offline</sub>
   </p>
 
   <p>
-    <a href="LICENSE"><img src="https://img.shields.io/github/license/Health-525/scholarflow-mobile" alt="License" /></a>
-    <img src="https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue" alt="Platform" />
-    <img src="https://img.shields.io/badge/inference-MNN--LLM-orange" alt="MNN-LLM" />
-    <img src="https://img.shields.io/badge/model-Qwen3%20(4--bit)-green" alt="Qwen3" />
-    <img src="https://img.shields.io/badge/offline-100%25-success" alt="Offline" />
+    <a href="docs/competition/">📄 比赛方案</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Health-525/scholarflow">🖥️ 桌面端主仓</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Health-525/scholarflow-mobile/issues/new">🐛 Issues</a>
+  </p>
+
+  <p>
+    <a href="LICENSE"><img src="https://img.shields.io/github/license/Health-525/scholarflow-mobile?style=flat-square" alt="License" /></a>
+    <img src="https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue?style=flat-square" alt="Platform" />
+    <img src="https://img.shields.io/badge/inference-MNN--LLM-orange?style=flat-square" alt="MNN-LLM" />
+    <img src="https://img.shields.io/badge/model-Qwen3-green?style=flat-square" alt="Qwen3" />
   </p>
 </div>
 
@@ -26,11 +27,22 @@
   <a href="#english">English</a>
 </p>
 
-<p align="center">
-  <img src="docs/competition/screenshots/小咪首页-首屏.png" width="30%" alt="首页" />
-  <img src="docs/competition/screenshots/小咪AI助手-问候.png" width="30%" alt="AI 助手" />
-  <img src="docs/competition/screenshots/小咪课表-今日.png" width="30%" alt="课表" />
-</p>
+<table align="center">
+  <tr>
+    <td align="center" width="33%">
+      <img src="docs/competition/screenshots/小咪首页-首屏.png" width="200" alt="首页" /><br />
+      <sub><b>📒 首页 · 学业聚合</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/competition/screenshots/小咪AI助手-问候.png" width="200" alt="AI 助手" /><br />
+      <sub><b>🐱 AI 助手 · 离线端侧</b></sub>
+    </td>
+    <td align="center" width="33%">
+      <img src="docs/competition/screenshots/小咪课表-今日.png" width="200" alt="课表" /><br />
+      <sub><b>📅 课表 · 今日</b></sub>
+    </td>
+  </tr>
+</table>
 
 ## 中文
 
