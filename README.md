@@ -1,21 +1,21 @@
 <div align="center">
   <img src="public/icons/logo.png" alt="ScholarFlow Logo" width="96" />
-  <h1>ScholarFlow</h1>
-  <p><strong>面向大学生的本地优先学习中枢</strong></p>
-  <p><strong>A local-first student workspace for campus life and study workflows</strong></p>
+  <h1>ScholarFlow Mobile</h1>
+  <p><strong>端侧 AI 学习助手 · 手机端（iOS / Android）</strong></p>
+  <p><strong>On-device AI study companion for college students — iOS / Android, fully offline</strong></p>
 
   <p>
-    <a href="https://github.com/Health-525/scholarflow/releases">下载 Download</a> ·
-    <a href="docs/school-adapter-guide.md">学校接入指南 Adapter Guide</a> ·
-    <a href="https://github.com/Health-525/scholarflow/issues/new?template=bug_report.md">问题反馈 Issues</a> ·
-    <a href="https://github.com/Health-525/scholarflow/issues/new?template=feature_request.md">功能建议 Requests</a>
+    <a href="docs/competition/">比赛技术方案 Competition</a> ·
+    <a href="https://github.com/Health-525/scholarflow">桌面端主仓 Desktop repo</a> ·
+    <a href="https://github.com/Health-525/scholarflow-mobile/issues/new">问题反馈 Issues</a>
   </p>
 
   <p>
-    <a href="https://github.com/Health-525/scholarflow/actions/workflows/ci.yml"><img src="https://github.com/Health-525/scholarflow/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-    <a href="LICENSE"><img src="https://img.shields.io/github/license/Health-525/scholarflow" alt="License" /></a>
-    <a href="https://nodejs.org"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node" /></a>
-    <a href="https://github.com/Health-525/scholarflow/releases"><img src="https://img.shields.io/github/v/release/Health-525/scholarflow?include_prereleases" alt="Release" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/github/license/Health-525/scholarflow-mobile" alt="License" /></a>
+    <img src="https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue" alt="Platform" />
+    <img src="https://img.shields.io/badge/inference-MNN--LLM-orange" alt="MNN-LLM" />
+    <img src="https://img.shields.io/badge/model-Qwen3%20(4--bit)-green" alt="Qwen3" />
+    <img src="https://img.shields.io/badge/offline-100%25-success" alt="Offline" />
   </p>
 </div>
 
@@ -26,281 +26,144 @@
   <a href="#english">English</a>
 </p>
 
-![ScholarFlow Dashboard](docs/dashboard.png)
+<p align="center">
+  <img src="docs/competition/screenshots/小咪首页-首屏.png" width="30%" alt="首页" />
+  <img src="docs/competition/screenshots/小咪AI助手-对话.png" width="30%" alt="AI 助手" />
+  <img src="docs/competition/screenshots/小咪课表-今日.png" width="30%" alt="课表" />
+</p>
 
 ## 中文
 
-### ScholarFlow 是什么
+### 这是什么
 
-ScholarFlow 把大学生日常分散在教务系统、图书馆系统和个人效率工具里的信息，收束到一个本地优先、离线可用、桌面体验完整的工作台里。
+**ScholarFlow Mobile 是 ScholarFlow 的手机端。** 它把大学生分散在十几个 App 里的学业事务——课表、作业、考试、GPA、图书馆、笔记、番茄钟、日报——**聚合进一个 App**，再用一个**完全跑在手机本地、离线可用**的端侧 AI 助手，作为统一智能入口贯穿所有模块。
 
-它不是一个单点应用，而是围绕真实学习流程组织起来的学生工作台：
+> 🖥️ 桌面端（Electron）在主仓 **[Health-525/scholarflow](https://github.com/Health-525/scholarflow)**；**本仓库专注手机端 + 端侧 AI**。
 
-- 课表、考试、成绩来自教务系统
-- 座位、预约、消息来自图书馆系统
-- 作业、笔记、番茄钟、日报和周报统一管理
-- 敏感数据优先保留在本地，而不是依赖第三方云端
+### 一句话亮点
 
-### 为什么值得用
+把大学生分散的学业全流程聚合到一端，再用一个随身、离线的端侧 AI 助手统一驱动——**免切换、免联网、免付费、数据不出端**。
 
-- 本地优先：学习数据默认存储在本地 SQLite
-- 桌面增强：Electron 提供安全存储、自动更新、后台刷新和活动统计
-- 工作流完整：不是单独的课表或待办，而是覆盖学习闭环
-- 易于扩展：通过 `SchoolAdapter` 可以继续接入更多学校
+### 为什么是「端侧」
 
-### 适合谁
+| | |
+| --- | --- |
+| **离线可用** | 图书馆地下层 / 宿舍弱网照样用，推理零流量 |
+| **零成本** | 本地推理、无限次，不需要云 AI 会员或按量付费 |
+| **隐私** | 成绩、薄弱知识点、学习数据**不出端**，本地完成推理 |
+| **懂你的上下文** | 学业数据与 AI 同处一端，可端侧个性化辅导（端侧 RAG 方向） |
 
-- 想把校园信息流和个人学习流放到一起的大学生
-- 重视隐私、不愿托管教务账号和学习数据的用户
-- 想验证校园效率产品方向的开发者
-- 想扩展更多学校支持的贡献者
+### 端侧 AI 技术
+
+- **模型**：`Qwen3-1.7B` / `Qwen3-0.6B`（4-bit 量化、MNN 格式，从[魔搭 ModelScope](https://www.modelscope.cn/) 拉取，约 2GB，不入库）
+- **推理框架**：[MNN-LLM](https://github.com/alibaba/MNN)，CPU(NEON) 后端，逐 token 流式回调，跑在原生线程不阻塞界面
+- **桥接**：Capacitor 原生插件（Swift → Obj-C++ → MNN C++）
+- **后端抽象**：`useChat` → `ChatBackend`——手机走原生 MNN、桌面/开发走 Ollama，**同一套聊天 UI 零改动**
+- **SME2 前瞻**：iPhone 15（A16/A17）走通用 NEON；在含 SME2 的 **M5 上实测验证 MNN 的 SME2 加速路径**，形成「今天 iPhone 15 可跑、未来无缝吃 SME2 提速」的同构演进
+
+> 完整技术方案、性能口径与 SME2 指南见 **[`docs/competition/`](docs/competition/)**。
+
+### 萌系「小咪」皮肤
+
+移动端专属 kawaii 粉猫皮肤（仅 `@media max-width:767px` 生效，不影响桌面主题）：首页 / 课表 / AI 助手 / 更多 / 设置 全模块改皮。截图见 [`docs/competition/screenshots/`](docs/competition/screenshots/)。
 
 ### 功能总览
 
 | 模块 | 说明 |
 | --- | --- |
-| 仪表盘 | 汇总课表、作业、跑步、考试倒计时、教务通知、最近日报 |
+| 仪表盘 | 汇总课表、作业、考试倒计时、教务通知、最近日报 |
 | 课表 | 今日视图、本周网格、日期查询、学期周次计算 |
-| 作业 | 快速新增、列表管理、完成状态追踪 |
-| 考试 | 考试安排查看与管理 |
+| 作业 / 考试 | 快速新增、列表管理、完成状态追踪 |
 | 成绩 / GPA | 教务同步、绩点展示、按学期查看 |
-| 图书馆 | 阅览室状态、预约、暂离、取消预约、馆内消息 |
-| 笔记 | Markdown、搜索、自动保存 |
-| 番茄钟 | 专注 / 休息循环计时 |
-| 目标 / 跑步 | 习惯与目标追踪 |
+| 图书馆 | 阅览室状态、预约、暂离、取消、馆内消息 |
+| 笔记 / 番茄钟 / 目标 | Markdown 笔记、专注计时、习惯追踪 |
 | 日报 / 周报 | 学习数据沉淀与趋势复盘 |
-| 设置 | 主题、数据导出、刷新策略、账户与设备信息 |
+| **AI 助手** | **贯穿全模块的端侧统一入口，离线即答** |
 
-### 平台支持
+### 快速开始（手机端）
 
-| 能力 | Electron 桌面端 | Web / PWA | Android / Capacitor |
-| --- | --- | --- | --- |
-| 课表 / 成绩 / 考试同步 | 支持 | 支持 | 实验性 |
-| 作业 / 目标 / 番茄钟 / 笔记 | 支持 | 支持 | 实验性 |
-| 图书馆预约与 JWT 刷新 | 支持更完整 | 受浏览器限制 | 实验性 |
-| 本地安全加密存储 | 支持 | 不完整 | 不完整 |
-| 活动窗口统计 | 支持 | 不支持 | 不支持 |
-| 后台自动刷新 | 支持 | 不支持 | 不支持 |
-
-桌面版是主形态，Web / PWA 是补充形态。
-
-### 快速开始
-
-#### 直接使用
-
-前往 [Releases](https://github.com/Health-525/scholarflow/releases) 下载 Windows 安装版或便携版。
-
-#### 本地开发
-
-要求：
-
-- Node.js 20+
-- npm 10+
+要求：Node 20+ ／ npm 10+ ／ Xcode（iOS）或 Android Studio ／ `git-lfs`（拉模型用）
 
 ```bash
-git clone https://github.com/Health-525/scholarflow.git
-cd scholarflow
+git clone https://github.com/Health-525/scholarflow-mobile.git
+cd scholarflow-mobile
 npm install
+
+# 1) 拉端侧大模型（~2GB，从魔搭；需 git-lfs）
+npm run mobile:models
+
+# 2) 构建并打开原生工程
+npm run mobile:ios                       # iOS：构建 + 打开 Xcode
+npm run mobile:build && npm run mobile:open   # Android：构建 + 打开 Android Studio
+
+# 仅在浏览器里调手机 UI
+npm run mobile:dev
 ```
 
-启动 Web 开发环境：
-
-```bash
-npm run dev
-```
-
-启动 Electron 开发环境：
-
-```bash
-npm run abi:node
-npm run electron:dev
-```
-
-验证命令：
-
-```bash
-npm run typecheck
-npm run lint
-npm test
-npm run check
-```
-
-构建：
-
-```bash
-npm run electron:build
-```
+> 大模型权重（`*.mnn.weight`）**不进 git**，克隆后跑一次 `npm run mobile:models` 即可补齐到 `ios/App/` 下。
 
 ### 技术栈
 
-- `Next.js 15` + `React 19` + `TypeScript`
-- `Tailwind CSS` + `shadcn/ui` + `Base UI`
-- `Zustand` + `TanStack Query`
-- `Electron` + `better-sqlite3`
-- `Capacitor` Android
-- `Vitest` + `Playwright`
+`Next.js 15` + `React 19` + `TypeScript` · `Tailwind CSS` + `shadcn/ui` · `Zustand` + `TanStack Query` · `Capacitor`（iOS / Android）· **`MNN-LLM` + `Qwen3`（端侧）** · `Vitest` + `Playwright`
 
-### 当前学校支持
+### 比赛
 
-- `njtech` - 南京工业大学
-- `mock` - 本地开发与适配器调试
+参加 **「手机上的创意AI」初赛**（参赛机型 iPhone 15）。技术方案文档、产品截图、MNN 开启 SME2 加速指南均在 **[`docs/competition/`](docs/competition/)**。
 
-如果你想接入新的学校系统，请阅读 [docs/school-adapter-guide.md](docs/school-adapter-guide.md)。
+### 相关文档
 
-### 安全说明
+- 桌面端主仓：[Health-525/scholarflow](https://github.com/Health-525/scholarflow)
+- 学校接入指南：[docs/school-adapter-guide.md](docs/school-adapter-guide.md)
+- 数据模型：[docs/DATA_MODEL.md](docs/DATA_MODEL.md)
+- 安全说明：[SECURITY.md](SECURITY.md) ／ 贡献：[CONTRIBUTING.md](CONTRIBUTING.md)
 
-- 敏感凭证优先使用桌面端系统级加密存储
-- Electron 使用 `contextIsolation: true` 与 `nodeIntegration: false`
-- 内部 API 调用带内部 token 校验
-- 图书馆登录与证书信任逻辑有显式边界控制
-
-更多说明见 [SECURITY.md](SECURITY.md)。
-
-### 贡献
-
-欢迎 Issue 和 PR。
-
-- [CONTRIBUTING.md](CONTRIBUTING.md)
-- [docs/school-adapter-guide.md](docs/school-adapter-guide.md)
-- [docs/DATA_MODEL.md](docs/DATA_MODEL.md)
-- [SECURITY.md](SECURITY.md)
+---
 
 ## English
 
-### What ScholarFlow Is
+### What It Is
 
-ScholarFlow is a local-first student workspace that brings together academic data, library workflows, and personal study tools into one desktop-oriented product.
+**ScholarFlow Mobile is the phone client of ScholarFlow.** It aggregates the academic chores a college student juggles across a dozen apps — schedule, assignments, exams, GPA, library, notes, pomodoro, reports — into **one app**, then drives every module through a single **on-device, fully-offline AI assistant**.
 
-It is designed around real student workflows rather than a single feature:
+> 🖥️ The desktop (Electron) build lives in the main repo **[Health-525/scholarflow](https://github.com/Health-525/scholarflow)**. **This repo focuses on mobile + on-device AI.**
 
-- schedules, exams, and grades from academic systems
-- seats, reservations, and notices from library systems
-- assignments, notes, focus timers, and reports in one place
-- sensitive data kept local whenever possible
+### Why On-Device
 
-### Why It Matters
+- **Offline** — works in library basements / weak dorm Wi-Fi; zero data usage for inference
+- **Zero cost** — unlimited local inference, no cloud-AI subscription
+- **Private** — grades and study data never leave the device
+- **Context-aware** — academic data sits on the same device as the AI (on-device RAG direction)
 
-- Local-first: study data is stored in local SQLite by default
-- Desktop-native: secure storage, auto-update, background refresh, and activity tracking
-- Workflow-oriented: covers the full study loop instead of one isolated task
-- Extensible: more schools can be added through `SchoolAdapter`
+### On-Device AI Stack
 
-### Who It Is For
+- **Model**: `Qwen3-1.7B` / `Qwen3-0.6B` (4-bit, MNN format, pulled from ModelScope, ~2GB, not committed)
+- **Inference**: [MNN-LLM](https://github.com/alibaba/MNN) on CPU(NEON), token-streamed on a native thread
+- **Bridge**: Capacitor native plugin (Swift → Obj-C++ → MNN C++)
+- **Backend abstraction**: `useChat` → `ChatBackend` — native MNN on phone, Ollama on desktop/dev, **one chat UI, zero changes**
+- **SME2-ready**: iPhone 15 runs generic NEON; the MNN SME2 acceleration path is validated on **M5 (SME2-capable)**
 
-- students who want campus data and personal productivity in one place
-- privacy-conscious users who do not want to outsource academic data
-- developers exploring student productivity products
-- contributors who want to support more universities
-
-### Feature Summary
-
-| Module | Description |
-| --- | --- |
-| Dashboard | Unified overview of schedules, assignments, running, countdowns, notices, and recent reports |
-| Schedule | Today view, weekly grid, date query, semester week calculation |
-| Assignments | Quick add, list management, completion tracking |
-| Exams | Exam schedule viewing and management |
-| Grades / GPA | Grade sync, GPA display, semester-based views |
-| Library | Reading room status, reservations, leave/cancel actions, in-library messages |
-| Notes | Markdown notes, search, autosave |
-| Pomodoro | Focus / break timer |
-| Goals / Running | Goal and habit tracking |
-| Reports | Daily and weekly reporting |
-| Settings | Themes, export, refresh strategy, account and device info |
-
-### Platform Support
-
-| Capability | Electron Desktop | Web / PWA | Android / Capacitor |
-| --- | --- | --- | --- |
-| Schedule / grades / exams sync | Supported | Supported | Experimental |
-| Assignments / goals / pomodoro / notes | Supported | Supported | Experimental |
-| Library reservation and JWT refresh | Better support | Browser-limited | Experimental |
-| Local secure storage | Supported | Partial | Partial |
-| Active window tracking | Supported | Not supported | Not supported |
-| Background auto-refresh | Supported | Not supported | Not supported |
-
-Desktop is the primary experience. Web / PWA is secondary.
+> Full technical writeup and SME2 guide in **[`docs/competition/`](docs/competition/)**.
 
 ### Quick Start
 
-#### For Users
-
-Download the Windows installer or portable build from [Releases](https://github.com/Health-525/scholarflow/releases).
-
-#### For Developers
-
-Requirements:
-
-- Node.js 20+
-- npm 10+
+Requirements: Node 20+ / npm 10+ / Xcode (iOS) or Android Studio / `git-lfs`.
 
 ```bash
-git clone https://github.com/Health-525/scholarflow.git
-cd scholarflow
+git clone https://github.com/Health-525/scholarflow-mobile.git
+cd scholarflow-mobile
 npm install
-```
-
-Start the Web dev server:
-
-```bash
-npm run dev
-```
-
-Start the Electron dev environment:
-
-```bash
-npm run abi:node
-npm run electron:dev
-```
-
-Validation:
-
-```bash
-npm run typecheck
-npm run lint
-npm test
-npm run check
-```
-
-Build:
-
-```bash
-npm run electron:build
+npm run mobile:models                    # fetch on-device models (~2GB, git-lfs)
+npm run mobile:ios                       # iOS: build + open Xcode
+# npm run mobile:build && npm run mobile:open   # Android
 ```
 
 ### Tech Stack
 
-- `Next.js 15` + `React 19` + `TypeScript`
-- `Tailwind CSS` + `shadcn/ui` + `Base UI`
-- `Zustand` + `TanStack Query`
-- `Electron` + `better-sqlite3`
-- `Capacitor` Android
-- `Vitest` + `Playwright`
+`Next.js 15` + `React 19` + `TypeScript` · `Tailwind` + `shadcn/ui` · `Zustand` + `TanStack Query` · `Capacitor` (iOS / Android) · **`MNN-LLM` + `Qwen3` (on-device)** · `Vitest` + `Playwright`
 
-### Current School Support
+### Competition
 
-- `njtech` - Nanjing Tech University
-- `mock` - local development and adapter testing
-
-If you want to add a new school integration, read [docs/school-adapter-guide.md](docs/school-adapter-guide.md).
-
-### Security
-
-- sensitive credentials use desktop-level secure storage where available
-- Electron uses `contextIsolation: true` and `nodeIntegration: false`
-- internal API calls are protected by an internal token layer
-- library login and certificate trust logic are explicitly scoped
-
-See [SECURITY.md](SECURITY.md) for full details.
-
-### Contributing
-
-Issues and pull requests are welcome.
-
-- [CONTRIBUTING.md](CONTRIBUTING.md)
-- [docs/school-adapter-guide.md](docs/school-adapter-guide.md)
-- [docs/DATA_MODEL.md](docs/DATA_MODEL.md)
-- [SECURITY.md](SECURITY.md)
+Built for the **"Creative AI on Mobile"** preliminary round (target device: iPhone 15). Solution doc, screenshots, and the MNN SME2 guide are in **[`docs/competition/`](docs/competition/)**.
 
 ## License
 
