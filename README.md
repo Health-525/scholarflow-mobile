@@ -3,7 +3,7 @@
   <h1>ScholarFlow Mobile</h1>
   <p>
     <strong>端侧 AI 学习助手 · 手机端 · 完全离线</strong><br />
-    <sub>On-device AI study companion · iOS / Android · fully offline</sub>
+    <sub>On-device AI study companion · iOS · fully offline</sub>
   </p>
 
   <p>
@@ -14,7 +14,7 @@
 
   <p>
     <a href="LICENSE"><img src="https://img.shields.io/github/license/Health-525/scholarflow-mobile?style=flat-square" alt="License" /></a>
-    <img src="https://img.shields.io/badge/platform-iOS%20%7C%20Android-blue?style=flat-square" alt="Platform" />
+    <img src="https://img.shields.io/badge/platform-iOS-blue?style=flat-square" alt="Platform" />
     <img src="https://img.shields.io/badge/inference-MNN--LLM-orange?style=flat-square" alt="MNN-LLM" />
     <img src="https://img.shields.io/badge/model-Qwen3-green?style=flat-square" alt="Qwen3" />
   </p>
@@ -51,6 +51,8 @@
 **ScholarFlow Mobile 是 ScholarFlow 的手机端。** 它把大学生分散在十几个 App 里的学业事务——课表、作业、考试、GPA、图书馆、笔记、番茄钟、日报——**聚合进一个 App**，再用一个**完全跑在手机本地、离线可用**的端侧 AI 助手，作为统一智能入口贯穿所有模块。
 
 > 🖥️ 桌面端（Electron）在主仓 **[Health-525/scholarflow](https://github.com/Health-525/scholarflow)**；**本仓库专注手机端 + 端侧 AI**。
+>
+> 📱 **当前仅支持 iOS**（参赛机型 iPhone 15）；`android/` 为 Capacitor 脚手架，端侧推理尚未接入 Android。
 
 ### 一句话亮点
 
@@ -94,7 +96,7 @@
 
 ### 快速开始（手机端）
 
-要求：Node 20+ ／ npm 10+ ／ Xcode（iOS）或 Android Studio ／ `git-lfs`（拉模型用）
+要求：Node 20+ ／ npm 10+ ／ Xcode（iOS，参赛机型 iPhone 15）／ `git-lfs`（拉模型用）
 
 ```bash
 git clone https://github.com/Health-525/scholarflow-mobile.git
@@ -106,8 +108,6 @@ npm run mobile:models
 
 # 2) 构建并打开原生工程
 npm run mobile:ios                       # iOS：构建 + 打开 Xcode
-npm run mobile:build && npm run mobile:open   # Android：构建 + 打开 Android Studio
-
 # 仅在浏览器里调手机 UI
 npm run mobile:dev
 ```
@@ -116,7 +116,7 @@ npm run mobile:dev
 
 ### 技术栈
 
-`Next.js 15` + `React 19` + `TypeScript` · `Tailwind CSS` + `shadcn/ui` · `Zustand` + `TanStack Query` · `Capacitor`（iOS / Android）· **`MNN-LLM` + `Qwen3`（端侧）** · `Vitest` + `Playwright`
+`Next.js 15` + `React 19` + `TypeScript` · `Tailwind CSS` + `shadcn/ui` · `Zustand` + `TanStack Query` · `Capacitor`（iOS）· **`MNN-LLM` + `Qwen3`（端侧）** · `Vitest` + `Playwright`
 
 ### 比赛
 
@@ -138,6 +138,8 @@ npm run mobile:dev
 **ScholarFlow Mobile is the phone client of ScholarFlow.** It aggregates the academic chores a college student juggles across a dozen apps — schedule, assignments, exams, GPA, library, notes, pomodoro, reports — into **one app**, then drives every module through a single **on-device, fully-offline AI assistant**.
 
 > 🖥️ The desktop (Electron) build lives in the main repo **[Health-525/scholarflow](https://github.com/Health-525/scholarflow)**. **This repo focuses on mobile + on-device AI.**
+>
+> 📱 **iOS only for now** (target device: iPhone 15). `android/` is a Capacitor scaffold; on-device inference is not wired to Android yet.
 
 ### Why On-Device
 
@@ -158,20 +160,18 @@ npm run mobile:dev
 
 ### Quick Start
 
-Requirements: Node 20+ / npm 10+ / Xcode (iOS) or Android Studio / `git-lfs`.
+Requirements: Node 20+ / npm 10+ / Xcode (iOS, target device iPhone 15) / `git-lfs`.
 
 ```bash
 git clone https://github.com/Health-525/scholarflow-mobile.git
 cd scholarflow-mobile
 npm install
 npm run mobile:models                    # fetch on-device models (~2GB, git-lfs)
-npm run mobile:ios                       # iOS: build + open Xcode
-# npm run mobile:build && npm run mobile:open   # Android
-```
+npm run mobile:ios                       # iOS: build + open Xcode```
 
 ### Tech Stack
 
-`Next.js 15` + `React 19` + `TypeScript` · `Tailwind` + `shadcn/ui` · `Zustand` + `TanStack Query` · `Capacitor` (iOS / Android) · **`MNN-LLM` + `Qwen3` (on-device)** · `Vitest` + `Playwright`
+`Next.js 15` + `React 19` + `TypeScript` · `Tailwind` + `shadcn/ui` · `Zustand` + `TanStack Query` · `Capacitor` (iOS) · **`MNN-LLM` + `Qwen3` (on-device)** · `Vitest` + `Playwright`
 
 ### Competition
 
