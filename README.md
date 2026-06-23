@@ -16,7 +16,7 @@
     <a href="LICENSE"><img src="https://img.shields.io/github/license/Health-525/scholarflow-mobile?style=flat-square" alt="License" /></a>
     <img src="https://img.shields.io/badge/platform-iOS-blue?style=flat-square" alt="Platform" />
     <img src="https://img.shields.io/badge/inference-MNN--LLM-orange?style=flat-square" alt="MNN-LLM" />
-    <img src="https://img.shields.io/badge/model-Qwen3-green?style=flat-square" alt="Qwen3" />
+    <img src="https://img.shields.io/badge/model-Qwen3--0.6B-green?style=flat-square" alt="Qwen3" />
   </p>
 </div>
 
@@ -69,7 +69,7 @@
 
 ### 端侧 AI 技术
 
-- **模型**：`Qwen3-1.7B` / `Qwen3-0.6B`（4-bit 量化、MNN 格式，从[魔搭 ModelScope](https://www.modelscope.cn/) 拉取，约 2GB，不入库）
+- **模型**：`Qwen3-0.6B`（4-bit 量化、MNN 格式；主力端侧模型，比 1.7B 更轻、适配 iPhone 15 本地 CPU，约 0.4GB，从[魔搭 ModelScope](https://www.modelscope.cn/) 拉取、不入库；另备 `Qwen3-1.7B` 可选）
 - **推理框架**：[MNN-LLM](https://github.com/alibaba/MNN)，CPU(NEON) 后端，逐 token 流式回调，跑在原生线程不阻塞界面
 - **桥接**：Capacitor 原生插件（Swift → Obj-C++ → MNN C++）
 - **后端抽象**：`useChat` → `ChatBackend`——手机走原生 MNN、桌面/开发走 Ollama，**同一套聊天 UI 零改动**
@@ -103,7 +103,7 @@ git clone https://github.com/Health-525/scholarflow-mobile.git
 cd scholarflow-mobile
 npm install
 
-# 1) 拉端侧大模型（~2GB，从魔搭；需 git-lfs）
+# 1) 拉端侧大模型（0.6B 主力 + 1.7B 可选，约 2GB，从魔搭；需 git-lfs）
 npm run mobile:models
 
 # 2) 构建并打开原生工程
@@ -150,7 +150,7 @@ npm run mobile:dev
 
 ### On-Device AI Stack
 
-- **Model**: `Qwen3-1.7B` / `Qwen3-0.6B` (4-bit, MNN format, pulled from ModelScope, ~2GB, not committed)
+- **Model**: `Qwen3-0.6B` (4-bit, MNN format) — primary on-device model, lighter than 1.7B and sized for the iPhone 15 CPU (~0.4GB, pulled from ModelScope, not committed; `Qwen3-1.7B` available as a larger option)
 - **Inference**: [MNN-LLM](https://github.com/alibaba/MNN) on CPU(NEON), token-streamed on a native thread
 - **Bridge**: Capacitor native plugin (Swift → Obj-C++ → MNN C++)
 - **Backend abstraction**: `useChat` → `ChatBackend` — native MNN on phone, Ollama on desktop/dev, **one chat UI, zero changes**
@@ -166,7 +166,7 @@ Requirements: Node 20+ / npm 10+ / Xcode (iOS, target device iPhone 15) / `git-l
 git clone https://github.com/Health-525/scholarflow-mobile.git
 cd scholarflow-mobile
 npm install
-npm run mobile:models                    # fetch on-device models (~2GB, git-lfs)
+npm run mobile:models                    # fetch on-device models (0.6B + optional 1.7B, ~2GB, git-lfs)
 npm run mobile:ios                       # iOS: build + open Xcode```
 
 ### Tech Stack
