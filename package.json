@@ -1,0 +1,173 @@
+{
+  "name": "scholarflow",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ScholarFlow — 独立学习管理中枢",
+  "author": "Health-525 <health-525@users.noreply.github.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Health-525/scholarflow"
+  },
+  "bugs": {
+    "url": "https://github.com/Health-525/scholarflow/issues"
+  },
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run typecheck && npm run lint && npm test",
+    "e2e": "playwright test",
+    "e2e:ui": "playwright test --ui",
+    "abi:node": "node scripts/switch-abi.js node",
+    "abi:electron": "node scripts/switch-abi.js electron",
+    "electron:dev": "concurrently \"next dev\" \"electron .\"",
+    "electron:hot:win": "node scripts/kill-port.js 3000 && node scripts/switch-abi.js node && set ELECTRON_DEV=1 && concurrently \"next dev\" \"electron .\"",
+    "electron:hot:nix": "node scripts/kill-port.js 3000 && node scripts/switch-abi.js node && ELECTRON_DEV=1 concurrently \"next dev\" \"electron .\"",
+    "electron:build": "next build && node electron/postbuild.js && electron-builder --win",
+    "electron:build:portable": "next build && node electron/postbuild.js && electron-builder --win portable",
+    "electron:build:installer": "next build && node electron/postbuild.js && electron-builder --win nsis",
+    "release": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1",
+    "release:fast": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1 -SkipCheck",
+    "release:installer": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1 -Target installer",
+    "release:portable": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1 -Target portable",
+    "release:dir": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1 -SkipCheck -OnlyDir",
+    "release:prebuilt:installer": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1 -SkipCheck -PrePackaged -Target installer",
+    "release:prebuilt:portable": "powershell -ExecutionPolicy Bypass -File scripts/build-release.ps1 -SkipCheck -PrePackaged -Target portable",
+    "mobile:models": "bash scripts/fetch-models.sh",
+    "mobile:build": "node scripts/mobile-build.js",
+    "mobile:sync": "npx cap sync android",
+    "mobile:open": "npx cap open android",
+    "mobile:ios": "node scripts/mobile-build.js ios && npx cap open ios",
+    "mobile:dev": "set BUILD_TARGET=mobile&& next dev"
+  },
+  "build": {
+    "appId": "com.health525.scholarflow",
+    "productName": "ScholarFlow",
+    "copyright": "Copyright © 2026 Health-525",
+    "directories": {
+      "output": "dist"
+    },
+    "asar": true,
+    "npmRebuild": false,
+    "asarUnpack": [
+      ".next/standalone/**/*",
+      "public/**/*",
+      "**/node_modules/better-sqlite3/**/*",
+      "**/*.node"
+    ],
+    "files": [
+      "electron/**/*",
+      ".next/standalone/**/*",
+      "public/**/*",
+      "package.json",
+      "!**/*.map"
+    ],
+    "win": {
+      "icon": "public/icons/logo.png",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ScholarFlow"
+    },
+    "portable": {
+      "artifactName": "ScholarFlow-${version}-portable.exe"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "Health-525",
+      "repo": "scholarflow",
+      "releaseType": "release"
+    }
+  },
+  "dependencies": {
+    "@base-ui/react": "^1.5.0",
+    "@capacitor/android": "^8.4.0",
+    "@capacitor/camera": "^8.2.0",
+    "@capacitor/cli": "^8.4.0",
+    "@capacitor/core": "^8.4.0",
+    "@capacitor/filesystem": "^8.1.2",
+    "@capacitor/local-notifications": "^8.2.0",
+    "@capacitor/preferences": "^8.0.1",
+    "@capacitor/splash-screen": "^8.0.1",
+    "@capacitor/status-bar": "^8.0.2",
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
+    "@hookform/resolvers": "^5.4.0",
+    "@kang8/chinese-holidays": "^1.0.1",
+    "@tanstack/react-query": "^5.101.0",
+    "active-win": "^9.0.0",
+    "better-sqlite3": "^12.11.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "dompurify": "^3.1.6",
+    "electron-updater": "^6.8.9",
+    "framer-motion": "^12.40.0",
+    "lucide-react": "^1.17.0",
+    "next": "^15.0.0",
+    "next-pwa": "^5.6.0",
+    "react": "^19.0.0",
+    "react-day-picker": "^10.0.1",
+    "react-dom": "^19.0.0",
+    "react-hook-form": "^7.79.0",
+    "rehype-stringify": "^10.0.0",
+    "remark-gfm": "^4.0.0",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.0",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.6.0",
+    "unified": "^11.0.5",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@capacitor/ios": "^8.4.1",
+    "@playwright/test": "^1.60.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/dompurify": "^3.0.5",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19.2.3",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^10.0.3",
+    "electron": "^42.3.3",
+    "electron-builder": "^26.8.1",
+    "eslint": "^8",
+    "eslint-config-next": "^15.0.0",
+    "eslint-plugin-jsx-a11y": "^6.9.0",
+    "jsdom": "^29.1.1",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "tailwindcss-animate": "^1.0.7",
+    "typescript": "^5",
+    "vitest": "^2.0.0"
+  }
+}

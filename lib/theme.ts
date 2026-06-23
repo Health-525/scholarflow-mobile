@@ -1,0 +1,109 @@
+import type { ThemeValue } from "@/types";
+
+const THEME_KEY = "sf_theme";
+
+/**
+ * 获取当前主题设置（从 localStorage）
+ * 兼容两种历史存储格式：
+ *   - 纯字符串: "light" | "dark" | "system"
+ *   - zustand persist JSON: {"state":{"theme":"dark"},"version":0}
+ */
+export function getTheme(): ThemeValue {
+  if (typeof window === "undefined") return "system";
+  try {
+    const stored = localStorage.getItem(THEME_KEY);
+    if (stored === "light" || stored === "dark" || stored === "system") {
+      return stored;
+    }
+    // 兼容旧版 zustand persist 的 JSON 格式
+    if (stored && stored.startsWith("{")) {
+      const parsed = JSON.parse(stored);
+      const t = parsed?.state?.theme;
+      if (t === "light" || t === "dark" || t === "system") {
+        return t;
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return "system";
+}
+
+/**
+ * 存储主题偏好（始终保存为纯字符串）
+ */
+export function setTheme(t: ThemeValue): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(THEME_KEY, t);
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error("[Theme] setTheme failed:", e);
+  }
+}
+
+/**
+ * 获取实际生效的主题（解析 system 为 light/dark）
+ */
+export function getEffectiveTheme(theme?: ThemeValue): "light" | "dark" {
+  const t = theme ?? getTheme();
+  if (t === "light") return "light";
+  if (t === "dark") return "dark";
+  // system: read prefers-color-scheme
+  if (
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-color-scheme: dark)").matches
+  ) {
+    return "dark";
+  }
+  return "light";
+}
+
+/**
+ * 根据当前主题偏好和系统偏好，将 data-theme 写入 <html> 元素
+ * 同时更新 Electron titleBarOverlay 颜色（跟随主题）
+ *
+ * Best practice: always set data-theme explicitly (light/dark),
+ * never rely on @media alone — single source of truth via attribute.
+ */
+export function applyTheme(theme?: ThemeValue): void {
+  if (typeof window === "undefined") return;
+  const t = theme ?? getTheme();
+  const html = document.documentElement;
+
+  // Always set data-theme explicitly — resolves "system" to actual value
+  const effective = getEffectiveTheme(t);
+  html.setAttribute("data-theme", effective);
+  // Also toggle .dark class for Tailwind dark: prefix support
+  html.classList.toggle("dark", effective === "dark");
+
+  // Update Electron titleBarOverlay to match theme
+  if (typeof window !== "undefined" && window.electronAPI?.setTitleBarOverlay) {
+    window.electronAPI.setTitleBarOverlay(
+      effective === "dark"
+        ? { color: "#050508", symbolColor: "#d8d8e2", height: 36 }
+        : { color: "#faf7f2", symbolColor: "#1a1510", height: 36 },
+    );
+  }
+}
+
+/**
+ * Listen for system theme changes (for "system" mode auto-switching)
+ * Returns a cleanup function to remove the listener.
+ */
+export function watchSystemTheme(
+  onChange: (effective: "light" | "dark") => void,
+): () => void {
+  if (typeof window === "undefined") return () => {};
+  const mql = window.matchMedia("(prefers-color-scheme: dark)");
+  const handler = (e: MediaQueryListEvent) => {
+    const current = getTheme();
+    if (current === "system") {
+      const effective = e.matches ? "dark" : "light";
+      applyTheme("system");
+      onChange(effective);
+    }
+  };
+  mql.addEventListener("change", handler);
+  return () => mql.removeEventListener("change", handler);
+}
